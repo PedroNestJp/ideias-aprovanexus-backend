@@ -40,4 +40,17 @@ export class ComentariosService {
       order: { criadoEm: 'ASC' },
     });
   }
+
+  async curtirComentario(id: number): Promise<Comentario> {
+    const comentario = await this.comentariosRepository.findOne({
+      where: { id },
+    });
+
+    if (!comentario) {
+      throw new NotFoundException('Comentário não encontrado');
+    }
+
+    comentario.likes = (comentario.likes || 0) + 1;
+    return this.comentariosRepository.save(comentario);
+  }
 }

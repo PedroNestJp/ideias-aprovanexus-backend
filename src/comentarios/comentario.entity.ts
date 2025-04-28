@@ -27,4 +27,7 @@ export class Comentario {
 
   @Column({ nullable: true })
   anexo!: string;
+
+  @Column({ default: 0 })
+  likes!: number;
 }

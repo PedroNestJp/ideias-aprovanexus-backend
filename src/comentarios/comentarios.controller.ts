@@ -51,4 +51,10 @@ export class ComentariosController {
   async listar(@Param('ideiaId') ideiaId: number) {
     return this.comentariosService.listarPorIdeia(ideiaId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/like')
+  async curtirComentario(@Param('id') id: number) {
+    return this.comentariosService.curtirComentario(id);
+  }
 }
