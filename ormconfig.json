@@ -1,0 +1,10 @@
+{
+  "type": "mysql",
+  "host": "185.137.92.48",
+  "port": 3306,
+  "username": "pedro",
+  "password": "TimeTi@nexus2025",
+  "database": "inova_aprovanexus",
+  "entities": ["dist/**/*.entity.js"],
+  "synchronize": true
+}
