@@ -20,4 +20,9 @@ export class AuthController {
     }
     return this.authService.login(user);
   }
+
+  @Post('google')
+  async loginWithGoogle(@Body() body: { credential: string }) {
+    return this.authService.loginWithGoogle(body.credential);
+  }
 }
