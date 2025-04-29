@@ -5,7 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { IdeiasModule } from './ideias/ideias.module';
 import { ComentariosModule } from './comentarios/comentarios.module';
-import { PerfilModule } from './perfil/perfil.modules';
+import { PerfilModule } from './profile/profile.modules';
 
 @Module({
   imports: [

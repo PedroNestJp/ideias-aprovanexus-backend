@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Ideia } from '../ideias/ideia.entity';
 import { Comentario } from '../comentarios/comentario.entity';
-import { PerfilController } from './perfil.controller';
+import { PerfilController } from './profile.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Ideia, Comentario])],
