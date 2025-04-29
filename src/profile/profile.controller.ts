@@ -18,22 +18,18 @@ export class PerfilController {
 
   @Get('ideias')
   async minhasIdeias(@Request() req) {
-    return this.ideiasRepository
-      .createQueryBuilder('ideia')
-      .leftJoinAndSelect('ideia.usuario', 'usuario')
-      .where('usuario.id = :userId', { userId: req.user.userId })
-      .orderBy('ideia.criadoEm', 'DESC')
-      .getMany();
+    return this.ideiasRepository.find({
+      where: { usuario: { id: req.user.id } },
+      order: { criadoEm: 'DESC' },
+    });
   }
 
   @Get('comentarios')
   async meusComentarios(@Request() req) {
-    return this.comentariosRepository
-      .createQueryBuilder('comentario')
-      .leftJoinAndSelect('comentario.autor', 'autor')
-      .leftJoinAndSelect('comentario.ideia', 'ideia')
-      .where('autor.id = :userId', { userId: req.user.userId })
-      .orderBy('comentario.criadoEm', 'DESC')
-      .getMany();
+    return this.comentariosRepository.find({
+      where: { autor: { id: req.user.id } },
+      relations: ['ideia'],
+      order: { criadoEm: 'DESC' },
+    });
   }
 }
