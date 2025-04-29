@@ -31,6 +31,7 @@ export class AuthService {
     };
     return {
       access_token: this.jwtService.sign(payload),
+      user,
     };
   }
 
@@ -96,6 +97,6 @@ export class AuthService {
       foto: user.foto,
     });
 
-    return { token, user };
+    return { access_token: token, user };
   }
 }
