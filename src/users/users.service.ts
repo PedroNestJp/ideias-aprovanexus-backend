@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -10,16 +10,36 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
+  async findByEmail(email: string): Promise<User | undefined> {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    return user ?? undefined;
+  }
+
+  async findById(id: number): Promise<User | undefined> {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    return user ?? undefined;
+  }
+
   async create(data: Partial<User>): Promise<User> {
-    const novoUsuario = this.usersRepository.create(data);
-    return this.usersRepository.save(novoUsuario);
+    if (!data.nome || !data.email || !data.senha) {
+      throw new BadRequestException('Dados obrigatórios ausentes');
+    }
+
+    const existingUser = await this.findByEmail(data.email);
+    if (existingUser) {
+      throw new BadRequestException('E-mail já cadastrado');
+    }
+
+    const user = this.usersRepository.create(data);
+    return this.usersRepository.save(user);
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { email } });
-  }
-
-  async findById(id: number): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
+  async update(id: number, updates: Partial<User>): Promise<User> {
+    await this.usersRepository.update(id, updates);
+    const user = await this.findById(id);
+    if (!user) {
+      throw new BadRequestException('Usuário não encontrado');
+    }
+    return user;
   }
 }

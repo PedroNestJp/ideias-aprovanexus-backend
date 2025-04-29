@@ -23,57 +23,78 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { username: user.nome, sub: user.id };
+    const payload = {
+      username: user.nome,
+      sub: user.id,
+      foto: user.foto || null,
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
   async register(data: any) {
-    const hashedPassword = await bcrypt.hash(data.senha, 10);
-    const newUser = await this.usersService.create({
-      ...data,
-      senha: hashedPassword,
-    });
+    const existingUser = await this.usersService.findByEmail(data.email);
+
+    if (existingUser) {
+      // Se já existe, apenas gerar login normalmente
+      return this.login(existingUser);
+    }
+
+    const newUserData: any = {
+      nome: data.nome,
+      email: data.email,
+      senha: await bcrypt.hash(data.senha || Math.random().toString(36), 10),
+    };
+
+    // Se tiver foto (login pelo Google), salva
+    if (data.foto) {
+      newUserData.foto = data.foto;
+    }
+
+    const newUser = await this.usersService.create(newUserData);
     return this.login(newUser);
   }
 
-  async loginWithGoogle(credential: string) {
+  async loginComGoogle(idToken: string) {
     const ticket = await this.googleClient.verifyIdToken({
-      idToken: credential,
-      audience:
-        process.env.VITE_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID,
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
+
     if (!payload) {
-      throw new UnauthorizedException('Token inválido do Google.');
+      throw new UnauthorizedException('Invalid Google token');
     }
 
-    const { email, name } = payload;
+    const email = payload.email;
+    const nome = payload.name;
+    const foto = payload.picture;
 
-    if (!email || !name) {
-      throw new UnauthorizedException('Informações incompletas do Google.');
+    // Verifica se já existe
+    if (!email) {
+      throw new UnauthorizedException('Email is missing in Google token');
     }
 
     let user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      // Cria usuário novo se não existir
+      // Cria usuário com senha aleatória (não será usada)
       user = await this.usersService.create({
-        nome: name,
-        email: email,
-        senha: '', // pode deixar vazio ou uma senha aleatória segura
+        nome,
+        email,
+        senha: await bcrypt.hash(Math.random().toString(36), 10),
+        foto,
       });
     }
 
-    return this.generateToken(user);
-  }
+    const token = this.jwtService.sign({
+      username: user.nome,
+      sub: user.id,
+      foto: user.foto,
+    });
 
-  private generateToken(user: any) {
-    const payload = { username: user.nome, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    return { token, user };
   }
 }

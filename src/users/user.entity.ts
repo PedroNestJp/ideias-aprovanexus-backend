@@ -21,4 +21,7 @@ export class User {
 
   @CreateDateColumn()
   criadoEm!: Date;
+
+  @Column({ nullable: true })
+  foto?: string;
 }
