@@ -11,10 +11,10 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://inova.aprovanexus.com.br'],
     credentials: true,
   });
 
-  await app.listen(3000);
+  await app.listen(3004);
 }
 bootstrap();
