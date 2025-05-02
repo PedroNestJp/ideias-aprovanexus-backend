@@ -1,4 +1,4 @@
-import { Controller, Post, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Param, Request, UseGuards } from '@nestjs/common';
 import { ComentariosService } from './comentarios.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -8,7 +8,7 @@ export class ComentariosLikeController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/like')
-  async curtir(@Param('id') id: number) {
-    return this.comentariosService.curtirComentario(id);
+  async curtir(@Param('id') id: number, @Request() req) {
+    return this.comentariosService.curtirComentario(id, req.user);
   }
 }

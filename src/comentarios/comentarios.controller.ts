@@ -48,13 +48,13 @@ export class ComentariosController {
   }
 
   @Get()
-  async listar(@Param('ideiaId') ideiaId: number) {
-    return this.comentariosService.listarPorIdeia(ideiaId);
+  async listarPorIdeia(@Param('ideiaId') ideiaId: number, @Request() req) {
+    return this.comentariosService.listarPorIdeia(ideiaId, req.user?.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/like')
-  async curtirComentario(@Param('id') id: number) {
-    return this.comentariosService.curtirComentario(id);
+  async curtirComentario(@Param('id') id: number, @Request() req) {
+    return this.comentariosService.curtirComentario(id, req.user);
   }
 }
