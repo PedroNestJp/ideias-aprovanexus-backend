@@ -48,14 +48,15 @@ export class IdeiasController {
     return this.ideiasService.criar(data, req.user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async listar() {
-    return this.ideiasService.listar();
+  async listar(@Request() req) {
+    return this.ideiasService.listar(req.user?.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/like')
-  async curtir(@Param('id') id: number) {
-    return this.ideiasService.curtir(id);
+  async curtir(@Param('id') id: number, @Request() req) {
+    return this.ideiasService.curtir(id, req.user);
   }
 }

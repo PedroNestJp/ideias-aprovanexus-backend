@@ -6,15 +6,20 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  app.setGlobalPrefix('api');
+
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
   });
 
-  app.enableCors({
-    origin: 'http://localhost:5173',
-    credentials: true,
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    app.enableCors({
+      origin: ['http://localhost:5173'],
+      credentials: true,
+    });
+    app.setGlobalPrefix('/');
+  }
 
-  await app.listen(3000);
+  await app.listen(3004);
 }
 bootstrap();
