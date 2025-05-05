@@ -53,23 +53,6 @@ export class IdeiasService {
       ...ideia,
       likedByUser: likedIds.has(ideia.id),
     }));
-
-    // return ideias.map((ideia) => ({
-    //   id: ideia.id,
-    //   titulo: ideia.titulo,
-    //   descricao: ideia.descricao,
-    //   instituicao: ideia.instituicao,
-    //   status: ideia.status,
-    //   likes: ideia.likes,
-    //   criadoEm: ideia.criadoEm,
-    //   usuario: {
-    //     id: ideia.usuario.id,
-    //     nome: ideia.usuario.nome,
-    //   },
-    //   anexoUrl: ideia.anexo
-    //     ? `http://localhost:3000/uploads/${ideia.anexo}`
-    //     : null,
-    // }));
   }
 
   async curtir(id: number, user: User): Promise<Ideia> {
