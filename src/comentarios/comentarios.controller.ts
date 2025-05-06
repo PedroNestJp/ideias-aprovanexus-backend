@@ -25,7 +25,7 @@ export class ComentariosController {
   @UseInterceptors(
     FileInterceptor('anexo', {
       storage: diskStorage({
-        destination: './uploads',
+        destination: './uploads/anexos-comentarios',
         filename: (req, file, cb) => {
           const ext = extname(file.originalname);
           const fileName = `${Date.now()}-${file.originalname}`;

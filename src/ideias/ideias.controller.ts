@@ -25,7 +25,7 @@ export class IdeiasController {
   @UseInterceptors(
     FileInterceptor('anexo', {
       storage: diskStorage({
-        destination: './uploads',
+        destination: './uploads/anexos-ideias',
         filename: (req, file, cb) => {
           const ext = extname(file.originalname);
           const fileName = `${Date.now()}-${file.originalname}`;

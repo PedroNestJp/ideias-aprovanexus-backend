@@ -6,8 +6,6 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.setGlobalPrefix('api');
-
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
   });
@@ -18,6 +16,8 @@ async function bootstrap() {
       credentials: true,
     });
     app.setGlobalPrefix('/');
+  } else {
+    app.setGlobalPrefix('api');
   }
 
   await app.listen(3004);
