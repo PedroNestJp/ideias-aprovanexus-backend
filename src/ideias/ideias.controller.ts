@@ -13,8 +13,7 @@ import { CreateIdeiaDto } from './dto/create-ideia.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { getMulterS3Config } from '../aws/s3.config';
 
 @Controller('ideias')
 export class IdeiasController {
@@ -23,28 +22,18 @@ export class IdeiasController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(
-    FileInterceptor('anexo', {
-      storage: diskStorage({
-        destination: './uploads/anexos-ideias',
-        filename: (req, file, cb) => {
-          const ext = extname(file.originalname);
-          const fileName = `${Date.now()}-${file.originalname}`;
-          cb(null, fileName);
-        },
-      }),
-    }),
+    FileInterceptor('anexo', { storage: getMulterS3Config('anexos-ideias') }),
   )
   async criar(
     @Body() body: CreateIdeiaDto,
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    const File = (file as any)?.location;
     const data = {
       ...body,
-      anexo: file?.filename || null, // Inclui o nome do anexo corretamente
+      anexo: File || null,
     };
-    console.log('File:', file);
-    console.log('Data:', data);
     return this.ideiasService.criar(data, req.user);
   }
 

@@ -8,9 +8,9 @@ export class ComentarioLike {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => User, { eager: true })
-  usuario!: User;
-
-  @ManyToOne(() => Comentario, { eager: true })
+  @ManyToOne(() => Comentario, (comentario) => comentario.likes)
   comentario!: Comentario;
+
+  @ManyToOne(() => User)
+  usuario!: User;
 }
