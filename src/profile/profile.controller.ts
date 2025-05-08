@@ -8,7 +8,6 @@ import {
   UseInterceptors,
   UploadedFile,
   Body,
-  Post,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,9 +15,9 @@ import { Repository } from 'typeorm';
 import { Ideia } from '../ideias/ideia.entity';
 import { Comentario } from '../comentarios/comentario.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { PerfilService } from './profile.service';
+import { getMulterS3Config } from '../aws/s3.config';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('perfil')
 @UseGuards(JwtAuthGuard)
@@ -33,27 +32,17 @@ export class PerfilController {
 
   @Patch()
   @UseInterceptors(
-    FileInterceptor('foto', {
-      storage: diskStorage({
-        destination: './uploads/fotos-perfil',
-        filename: (req, file, cb) => {
-          const ext = extname(file.originalname);
-          const fileName = `${Date.now()}-${file.originalname}`;
-          cb(null, fileName);
-        },
-      }),
-    }),
+    FileInterceptor('foto', { storage: getMulterS3Config('fotos-perfil') }),
   )
   async atualizarPerfil(
     @Request() req,
     @UploadedFile() foto: Express.Multer.File,
-    @Body('nome') nome: string,
+    @Body() body: UpdateProfileDto,
   ) {
-    const caminhoFoto = foto ? foto.filename : undefined;
-    return this.perfilService.atualizarPerfil(req.user.id, nome, caminhoFoto);
+    const imageUrl = (foto as any)?.location;
+    return this.perfilService.atualizarPerfil(req.user.id, body.nome, imageUrl);
   }
 
-  // alterar senha
   @Patch('senha')
   async alterarSenha(
     @Request() req,

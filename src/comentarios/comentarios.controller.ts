@@ -12,9 +12,8 @@ import {
 import { ComentariosService } from './comentarios.service';
 import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { getMulterS3Config } from '../aws/s3.config';
 
 @Controller('ideias/:ideiaId/comentarios')
 export class ComentariosController {
@@ -24,14 +23,7 @@ export class ComentariosController {
   @Post()
   @UseInterceptors(
     FileInterceptor('anexo', {
-      storage: diskStorage({
-        destination: './uploads/anexos-comentarios',
-        filename: (req, file, cb) => {
-          const ext = extname(file.originalname);
-          const fileName = `${Date.now()}-${file.originalname}`;
-          cb(null, fileName);
-        },
-      }),
+      storage: getMulterS3Config('anexos-comentarios'),
     }),
   )
   async comentar(
@@ -40,11 +32,13 @@ export class ComentariosController {
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.comentariosService.criar(
-      ideiaId,
-      { ...dto, anexo: file?.filename },
-      req.user,
-    );
+    const File = (file as any)?.location;
+    console.log('File:', File);
+    const data = {
+      ...dto,
+      anexo: File,
+    };
+    return this.comentariosService.criar(ideiaId, data, req.user);
   }
 
   @Get()
