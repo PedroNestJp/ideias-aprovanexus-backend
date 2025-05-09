@@ -1,26 +1,16 @@
-Inova Aprovanexus
-
-Este repositório contém duas pastas principais:
-
-frontend (inova-frontend): aplicação cliente em React + TypeScript
-
-backend (inova-backend): API REST em NestJS + TypeORM
-
-📂 Frontend (inova-frontend)
+📂 Backend (inova-backend)
 
 🔧 Tecnologias
 
-React 18 + TypeScript
+NestJS + TypeScript
 
-Vite
+TypeORM (MySQL)
 
-Tailwind CSS (Design System reutilizável)
+AWS S3 (upload de arquivos via Multer S3)
 
-Axios (requisições HTTP)
+JWT Authentication (Passport + Guards)
 
-React Router (navegação)
-
-Testing Library + Jest (testes unitários e de integração)
+Google OAuth
 
 Padrões: Clean Architecture, DDD, SOLID
 
@@ -30,23 +20,69 @@ Node.js (v14+)
 
 Yarn
 
+MySQL
+
 🚀 Instalação & Execução
 
-cd frontend/inova-frontend
+cd backend/inova-backend
 yarn install
+yarn start
+
+Configuração de Banco
+
+O arquivo orm.config.json deve conter suas credenciais:
+
+{
+  "type": "mysql",
+  "host": "<host>",
+  "port": 3306,
+  "username": "<user>",
+  "password": "<pass>",
+  "database": "inova_aprovanexus",
+  "entities": ["dist/**/*.entity.js"],
+  "synchronize": true
+}
 
 Variáveis de ambiente
 
-Crie um arquivo .env na raiz de inova-frontend com:
+JWT_SECRET: segredo para assinatura de tokens
 
-VITE_API_URL=http://localhost:3004
+GOOGLE_CLIENT_ID: client ID para login Google OAuth
+
+AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_REGION, S3_BUCKET: configurações AWS S3
 
 Scripts disponíveis
 
-yarn dev — executa o servidor de desenvolvimento (Vite)
+yarn start — inicia API em modo dev (ts-node)
 
-yarn build — gera build de produção
+yarn build — compila TS para dist/
 
-yarn preview — pré-visualiza o build localmente
+yarn start:prod — executa build em produção
 
-yarn test — executa a suíte de testes (Jest)
+yarn migration:generate <nome> — gera migration (requer data-source.ts)
+
+yarn migration:run — aplica migrations
+
+🗂️ Estrutura de Pastas
+
+inova-frontend/
+├─ public/
+├─ src/
+│  ├─ pages/
+│  ├─ components/
+│  ├─ auth/
+│  └─ api/
+└─ vite.config.ts
+
+inova-backend/
+├─ src/
+│  ├─ auth/
+│  ├─ users/
+│  ├─ ideias/
+│  └─ main.ts
+├─ orm.config.json
+└─ tsconfig.json
+
+📖 Documentação
+
+Para detalhes de endpoints e fluxos de autenticação, consulte os comentários no código ou a Wiki interna deste repositório.
