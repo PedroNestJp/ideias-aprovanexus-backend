@@ -28,6 +28,7 @@ export class AuthService {
       username: user.nome,
       sub: user.id,
       foto: user.foto || null,
+      role: user.role,
     };
     return {
       access_token: this.jwtService.sign(payload),
@@ -47,6 +48,7 @@ export class AuthService {
       nome: data.nome,
       email: data.email,
       senha: await bcrypt.hash(data.senha || Math.random().toString(36), 10),
+      role: 'usuario',
     };
 
     // Se tiver foto (login pelo Google), salva
@@ -88,6 +90,7 @@ export class AuthService {
         email,
         senha: await bcrypt.hash(Math.random().toString(36), 10),
         foto,
+        role: 'usuario',
       });
     }
 
@@ -95,6 +98,7 @@ export class AuthService {
       username: user.nome,
       sub: user.id,
       foto: user.foto,
+      role: user.role,
     });
 
     return { access_token: token, user };

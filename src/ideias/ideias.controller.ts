@@ -7,6 +7,9 @@ import {
   UseGuards,
   Request,
   Param,
+  Patch,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { IdeiasService } from './ideias.service';
 import { CreateIdeiaDto } from './dto/create-ideia.dto';
@@ -14,6 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { getMulterS3Config } from '../aws/s3.config';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('ideias')
 export class IdeiasController {
@@ -47,5 +51,23 @@ export class IdeiasController {
   @Post(':id/like')
   async curtir(@Param('id') id: number, @Request() req) {
     return this.ideiasService.curtir(id, req.user);
+  }
+
+  // PATCH /ideias/:id/status
+  @Patch(':id/status')
+  @UseGuards(AuthGuard('jwt'))
+  async atualizarStatusIdeia(
+    @Param('id') id: number,
+    @Body('status') status: string,
+    @Req() req: any,
+  ) {
+    const role = req.user?.role;
+    if (role !== 'diretor' && role !== 'admin') {
+      throw new UnauthorizedException(
+        'Apenas diretores ou administradores podem alterar o status.',
+      );
+    }
+
+    return this.ideiasService.atualizarStatus(id, status);
   }
 }

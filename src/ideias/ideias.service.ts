@@ -6,8 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Ideia } from './ideia.entity';
-import { CreateIdeiaDto } from './dto/create-ideia.dto';
+import { Ideia, IdeiaStatus } from './ideia.entity';
 import { User } from '../users/user.entity';
 import { IdeiaLike } from '../likes/ideia-like.entity';
 
@@ -73,5 +72,26 @@ export class IdeiasService {
     );
 
     return this.ideiasRepository.save(ideia);
+  }
+
+  async atualizarStatus(id: number, status: string) {
+    const ideia = await this.ideiasRepository.findOne({ where: { id } });
+
+    const valoresPermitidos: IdeiaStatus[] = [
+      'Cadastrado',
+      'Em desenvolvimento',
+      'Concluído',
+      'Já existe no grupo',
+    ];
+
+    if (!valoresPermitidos.includes(status as IdeiaStatus)) {
+      throw new BadRequestException('Status inválido.');
+    }
+
+    if (!ideia) {
+      throw new NotFoundException('Ideia não encontrada');
+    }
+    ideia.status = status as IdeiaStatus;
+    return await this.ideiasRepository.save(ideia);
   }
 }

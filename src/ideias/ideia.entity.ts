@@ -8,6 +8,12 @@ import {
 } from 'typeorm';
 import { User } from '../users/user.entity';
 
+export type IdeiaStatus =
+  | 'Cadastrado'
+  | 'Em desenvolvimento'
+  | 'Concluído'
+  | 'Já existe no grupo';
+
 @Entity('ideias')
 export class Ideia {
   @PrimaryGeneratedColumn()
@@ -23,7 +29,7 @@ export class Ideia {
   instituicao!: string;
 
   @Column({ default: 'Cadastrado' })
-  status!: string; // Cadastrado, Em desenvolvimento, Já existe, Concluído
+  status!: IdeiaStatus;
 
   @Column({ default: 0 })
   likes!: number;
