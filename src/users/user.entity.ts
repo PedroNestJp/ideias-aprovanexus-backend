@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
+export type UserRole = 'usuario' | 'diretor' | 'admin';
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -24,4 +26,7 @@ export class User {
 
   @Column({ nullable: true })
   foto?: string;
+
+  @Column({ default: 'usuario' })
+  role?: UserRole;
 }
